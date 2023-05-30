@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using DogsHouseService.WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDogsHouseServiceDbContext(builder.Configuration);
 builder.Services.RegisterCustomServices();
 builder.Services.AddControllers();
+builder.Services.AddIpRateLimiting(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,6 +25,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseIpRateLimiting();
 
 app.MapControllers();
 
