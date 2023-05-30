@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DogsHouseService.BLL\DogsHouseService.BLL.csproj" />
     <ProjectReference Include="..\DogsHouseService.DAL\DogsHouseService.DAL.csproj" />
   </ItemGroup>
