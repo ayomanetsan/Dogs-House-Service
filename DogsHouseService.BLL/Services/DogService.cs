@@ -51,11 +51,13 @@ namespace DogsHouseService.BLL.Services
             return order == SortOrder.Ascending ? query.OrderBy(keySelector) : query.OrderByDescending(keySelector);
         }
 
-
-        public Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            int skipCount = (pageNumber - 1) * pageSize;
+
+            return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }
+
 
         public Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string sortBy, SortOrder sortOrder)
         {
