@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DogsHouseService.WebAPI", "DogsHouseService.WebAPI\DogsHouseService.WebAPI.csproj", "{D7A2EBDC-ED7E-4DD9-8CA5-9BAEEBEA565A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DogsHouseService.WebAPI", "DogsHouseService.WebAPI\DogsHouseService.WebAPI.csproj", "{D7A2EBDC-ED7E-4DD9-8CA5-9BAEEBEA565A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DogsHouseService.DAL", "DogsHouseService.DAL\DogsHouseService.DAL.csproj", "{19E1D777-ED78-4E05-A7A0-56D79DAC5F83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DogsHouseService.DAL", "DogsHouseService.DAL\DogsHouseService.DAL.csproj", "{19E1D777-ED78-4E05-A7A0-56D79DAC5F83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DogsHouseService.BLL", "DogsHouseService.BLL\DogsHouseService.BLL.csproj", "{AC43888A-5F2C-4716-B9F4-D992F7F092DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{19E1D777-ED78-4E05-A7A0-56D79DAC5F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19E1D777-ED78-4E05-A7A0-56D79DAC5F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19E1D777-ED78-4E05-A7A0-56D79DAC5F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC43888A-5F2C-4716-B9F4-D992F7F092DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC43888A-5F2C-4716-B9F4-D992F7F092DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC43888A-5F2C-4716-B9F4-D992F7F092DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC43888A-5F2C-4716-B9F4-D992F7F092DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
