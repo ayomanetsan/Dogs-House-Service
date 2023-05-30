@@ -19,9 +19,24 @@ namespace DogsHouseService.WebAPI.Controllers
         }
 
         [HttpGet("dogs")]
-        public async Task<IActionResult> GetDogs() 
+        public async Task<IActionResult> GetDogs([FromQuery] string attribute, [FromQuery] string order)
         {
-            return Ok(await _dogService.GetAllDogsAsync());
+            if (!string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
+            {
+                try
+                {
+                    return Ok(await _dogService.GetSortedDogsAsync(attribute, order));
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }  
+            }
+            else
+            {
+                return Ok(await _dogService.GetAllDogsAsync());
+            }
         }
+
     }
 }
