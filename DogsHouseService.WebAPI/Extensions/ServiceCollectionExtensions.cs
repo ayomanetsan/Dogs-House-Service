@@ -1,4 +1,6 @@
-﻿using DogsHouseService.DAL.Context;
+﻿using DogsHouseService.BLL.Interfaces;
+using DogsHouseService.BLL.Services;
+using DogsHouseService.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace DogsHouseService.WebAPI.Extensions
@@ -12,6 +14,11 @@ namespace DogsHouseService.WebAPI.Extensions
                 options.UseSqlServer(
                     connectionsString,
                     opt => opt.MigrationsAssembly(typeof(DogsHouseServiceDbContext).Assembly.GetName().Name)));
+        }
+
+        public static void RegisterCustomServices(this IServiceCollection services)
+        {
+            services.AddTransient<IDogService, DogService>();
         }
     }
 }
