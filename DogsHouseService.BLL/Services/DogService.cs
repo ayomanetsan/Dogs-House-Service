@@ -2,7 +2,6 @@
 using DogsHouseService.BLL.Interfaces;
 using DogsHouseService.DAL.Context;
 using DogsHouseService.DAL.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DogsHouseService.BLL.Services
@@ -21,7 +20,7 @@ namespace DogsHouseService.BLL.Services
             return await _context.Dogs.ToListAsync();
         }
 
-        public async Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, SortOrder order)
+        public async Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, string order)
         {
             return await DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order).ToListAsync();
         }
@@ -33,7 +32,7 @@ namespace DogsHouseService.BLL.Services
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }
 
-        public async Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, SortOrder order)
+        public async Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, string order)
         {
             var query = DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order);
 

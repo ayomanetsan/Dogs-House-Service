@@ -1,12 +1,11 @@
 ﻿using DogsHouseService.DAL.Entities;
-using Microsoft.Data.SqlClient;
 using System.Linq.Expressions;
 
 namespace DogsHouseService.BLL.Helpers
 {
     public static class DogSortingHelper
     {
-        public static IQueryable<Dog> ApplySortByAttribute(IQueryable<Dog> query, string attribute, SortOrder order)
+        public static IQueryable<Dog> ApplySortByAttribute(IQueryable<Dog> query, string attribute, string order)
         {
             switch (attribute)
             {
@@ -23,9 +22,9 @@ namespace DogsHouseService.BLL.Helpers
             }
         }
 
-        private static IQueryable<T> SortBy<T, TKey>(IQueryable<T> query, Expression<Func<T, TKey>> keySelector, SortOrder order)
+        private static IQueryable<T> SortBy<T, TKey>(IQueryable<T> query, Expression<Func<T, TKey>> keySelector, string order)
         {
-            return order == SortOrder.Ascending ? query.OrderBy(keySelector) : query.OrderByDescending(keySelector);
+            return order == "asc" ? query.OrderBy(keySelector) : order == "desc" ? query.OrderByDescending(keySelector) : throw new ArgumentException("Invalid order value.");
         }
     }
 }

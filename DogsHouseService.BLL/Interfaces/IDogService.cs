@@ -1,5 +1,4 @@
 ﻿using DogsHouseService.DAL.Entities;
-using Microsoft.Data.SqlClient;
 
 namespace DogsHouseService.BLL.Interfaces
 {
@@ -7,11 +6,11 @@ namespace DogsHouseService.BLL.Interfaces
     {
         Task<IEnumerable<Dog>> GetAllDogsAsync();
 
-        Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, SortOrder order);
+        Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, string order);
 
         Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize);
 
-        Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, SortOrder order);
+        Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, string order);
 
         Task CreateDogAsync(Dog dog);
     }
