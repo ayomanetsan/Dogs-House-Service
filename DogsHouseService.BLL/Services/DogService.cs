@@ -1,9 +1,9 @@
-﻿using DogsHouseService.BLL.Interfaces;
+﻿using DogsHouseService.BLL.Helpers;
+using DogsHouseService.BLL.Interfaces;
 using DogsHouseService.DAL.Context;
 using DogsHouseService.DAL.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace DogsHouseService.BLL.Services
 {
@@ -23,32 +23,7 @@ namespace DogsHouseService.BLL.Services
 
         public async Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, SortOrder order)
         {
-            IQueryable<Dog> query = _context.Dogs;
-
-            switch (attribute)
-            {
-                case "name":
-                    query = SortBy(query, d => d.Name, order);
-                    break;
-                case "color":
-                    query = SortBy(query, d => d.Color, order);
-                    break;
-                case "tail_length":
-                    query = SortBy(query, d => d.Tail_Length, order);
-                    break;
-                case "weight":
-                    query = SortBy(query, d => d.Weight, order);
-                    break;
-                default:
-                    throw new ArgumentException("Invalid attribute value.");
-            }
-
-            return await query.ToListAsync();
-        }
-
-        private static IQueryable<T> SortBy<T, TKey>(IQueryable<T> query, Expression<Func<T, TKey>> keySelector, SortOrder order)
-        {
-            return order == SortOrder.Ascending ? query.OrderBy(keySelector) : query.OrderByDescending(keySelector);
+            return await DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order).ToListAsync();
         }
 
         public async Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize)
