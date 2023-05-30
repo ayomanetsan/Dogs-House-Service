@@ -1,6 +1,6 @@
 ﻿using DogsHouseService.BLL.Interfaces;
+using DogsHouseService.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DogsHouseService.WebAPI.Controllers
 {
@@ -61,5 +61,22 @@ namespace DogsHouseService.WebAPI.Controllers
             }
         }
 
+        [HttpPost("dog")]
+        public async Task<IActionResult> CreateDog([FromBody] Dog dog)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                return Created("dogs", await _dogService.CreateDogAsync(dog));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
