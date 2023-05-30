@@ -7,7 +7,7 @@ namespace DogsHouseService.BLL.Interfaces
     {
         Task<IEnumerable<Dog>> GetAllDogsAsync();
 
-        Task<IEnumerable<Dog>> GetSortedDogsAsync(string sortBy, SortOrder sortOrder);
+        Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, SortOrder order);
 
         Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize);
 
