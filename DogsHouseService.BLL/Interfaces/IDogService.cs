@@ -12,5 +12,7 @@ namespace DogsHouseService.BLL.Interfaces
         Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize);
 
         Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, SortOrder order);
+
+        Task CreateDogAsync(Dog dog);
     }
 }

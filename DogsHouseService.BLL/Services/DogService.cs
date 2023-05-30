@@ -41,5 +41,16 @@ namespace DogsHouseService.BLL.Services
 
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }   
+
+        public async Task CreateDogAsync(Dog dog)
+        {
+            if (await _context.Dogs.AnyAsync(d => d.Name == dog.Name))
+            {
+                throw new InvalidOperationException("Dog already exists.");
+            }
+
+            _context.Dogs.Add(dog);
+            await _context.SaveChangesAsync();
+        }
     }
 }
