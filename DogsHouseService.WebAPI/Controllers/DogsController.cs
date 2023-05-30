@@ -22,7 +22,18 @@ namespace DogsHouseService.WebAPI.Controllers
         [HttpGet("dogs")]
         public async Task<IActionResult> GetDogs([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string attribute, [FromQuery] string order)
         {
-            if (!string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
+            if (pageNumber != 0 && pageSize != 0 && !string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
+            {
+                try
+                {
+                    return Ok(await _dogService.GetPagedAndSortedDogsAsync(pageNumber,pageSize, attribute, order));
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+            else if (!string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
             {
                 try
                 {
@@ -31,7 +42,7 @@ namespace DogsHouseService.WebAPI.Controllers
                 catch (Exception ex)
                 {
                     return BadRequest(ex.Message);
-                }  
+                }
             }
             else if (pageNumber != 0 && pageSize != 0)
             {
