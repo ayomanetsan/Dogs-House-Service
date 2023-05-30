@@ -1,4 +1,5 @@
 ﻿using DogsHouseService.DAL.Entities;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace DogsHouseService.BLL.Helpers
@@ -37,6 +38,26 @@ namespace DogsHouseService.BLL.Helpers
             {
                 throw new ArgumentException("Page size must be greater than zero.");
             }
+        }
+
+        public static void ValidateDog(Dog dog)
+        {
+            if (dog.Name.Replace(" ", "").IsNullOrEmpty())
+            {
+                throw new ArgumentException("Dog's name cannot be empty.");
+            }
+            else if (dog.Color.Replace(" ", "").IsNullOrEmpty())
+            {
+                throw new ArgumentException("Dog's color cannot be empty.");
+            }
+            else if (dog.Tail_Length < 0)
+            {
+                throw new ArgumentException("Dog's tail length cannot be less than zero.");
+            }
+            else if (dog.Weight < 0)
+            {
+                throw new ArgumentException("Dog's weight cannot be less than zero.");
+            }           
         }
     }
 }

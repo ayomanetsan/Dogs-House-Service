@@ -45,8 +45,10 @@ namespace DogsHouseService.BLL.Services
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }
 
-        public async Task CreateDogAsync(Dog dog)
+        public async Task<Dog> CreateDogAsync(Dog dog)
         {
+            DogHelperMethods.ValidateDog(dog);
+            
             if (await _context.Dogs.AnyAsync(d => d.Name == dog.Name))
             {
                 throw new InvalidOperationException("Dog already exists.");
@@ -54,6 +56,8 @@ namespace DogsHouseService.BLL.Services
 
             _context.Dogs.Add(dog);
             await _context.SaveChangesAsync();
+
+            return dog;
         }
     }
 }
