@@ -33,10 +33,13 @@ namespace DogsHouseService.BLL.Services
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }
 
-
-        public Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string sortBy, SortOrder sortOrder)
+        public async Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, SortOrder order)
         {
-            throw new NotImplementedException();
+            var query = DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order);
+
+            int skipCount = (pageNumber - 1) * pageSize;
+
+            return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
         }   
     }
 }
