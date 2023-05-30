@@ -27,6 +27,15 @@ namespace DogsHouseService.BLL.Services
 
         public async Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize)
         {
+            if (pageNumber <= 0)
+            {
+                throw new ArgumentException("Page number must be greater than zero.");
+            }
+            else if (pageSize <= 0)
+            {
+                throw new ArgumentException("Page size must be greater than zero.");
+            }    
+
             int skipCount = (pageNumber - 1) * pageSize;
 
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();

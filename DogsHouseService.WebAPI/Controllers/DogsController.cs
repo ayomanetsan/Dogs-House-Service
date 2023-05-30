@@ -1,5 +1,6 @@
 ﻿using DogsHouseService.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DogsHouseService.WebAPI.Controllers
 {
@@ -19,7 +20,7 @@ namespace DogsHouseService.WebAPI.Controllers
         }
 
         [HttpGet("dogs")]
-        public async Task<IActionResult> GetDogs([FromQuery] string attribute, [FromQuery] string order)
+        public async Task<IActionResult> GetDogs([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string attribute, [FromQuery] string order)
         {
             if (!string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
             {
@@ -31,6 +32,17 @@ namespace DogsHouseService.WebAPI.Controllers
                 {
                     return BadRequest(ex.Message);
                 }  
+            }
+            else if (pageNumber != 0 && pageSize != 0)
+            {
+                try
+                {
+                    return Ok(await _dogService.GetPagedDogsAsync(pageNumber, pageSize));
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
             else
             {
