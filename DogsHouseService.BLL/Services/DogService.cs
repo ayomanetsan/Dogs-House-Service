@@ -22,19 +22,12 @@ namespace DogsHouseService.BLL.Services
 
         public async Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, string order)
         {
-            return await DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order).ToListAsync();
+            return await DogHelperMethods.ApplySortByAttribute(_context.Dogs, attribute, order).ToListAsync();
         }
 
         public async Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize)
         {
-            if (pageNumber <= 0)
-            {
-                throw new ArgumentException("Page number must be greater than zero.");
-            }
-            else if (pageSize <= 0)
-            {
-                throw new ArgumentException("Page size must be greater than zero.");
-            }    
+            DogHelperMethods.ValidatePage(pageNumber, pageSize);
 
             int skipCount = (pageNumber - 1) * pageSize;
 
@@ -43,12 +36,14 @@ namespace DogsHouseService.BLL.Services
 
         public async Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, string order)
         {
-            var query = DogSortingHelper.ApplySortByAttribute(_context.Dogs, attribute, order);
+            var query = DogHelperMethods.ApplySortByAttribute(_context.Dogs, attribute, order);
+
+            DogHelperMethods.ValidatePage(pageNumber, pageSize);
 
             int skipCount = (pageNumber - 1) * pageSize;
 
             return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
-        }   
+        }
 
         public async Task CreateDogAsync(Dog dog)
         {
