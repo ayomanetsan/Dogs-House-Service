@@ -29,7 +29,6 @@ To run the Dog Shelter API, you need to provide a connection string for the data
   }
 }
 ```
-Make sure to replace name with the server name or connection URL and dbname with the name of the database you want to use for the Dog Shelter API.
 ## Getting Started
 To get started with the Dog Shelter API, follow these steps:
 
