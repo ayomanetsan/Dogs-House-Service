@@ -194,7 +194,7 @@ namespace DogsHouseService.Tests.Controllers
 
             await _sut.CreateDog(dog);
             A.CallTo(() => _dogService.CreateDogAsync(dog))
-                .Throws<ArgumentException>();
+                .Throws<InvalidOperationException>();
 
             var result = await _sut.CreateDog(dog);
 

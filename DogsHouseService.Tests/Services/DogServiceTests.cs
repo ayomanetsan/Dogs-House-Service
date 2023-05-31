@@ -134,5 +134,38 @@ namespace DogsHouseService.Tests.Services
         {
             await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order));
         }
+
+        [Fact]
+        public async Task CreateDog_WhenNonExistingDog_ReturnsCreatedDog()
+        {
+            var dog = new Dog
+            {
+                Name = "John",
+                Color = "White",
+                Tail_Length = 1,
+                Weight = 1,
+            };
+
+            var result = await _sut.CreateDogAsync(dog);
+
+            Assert.Equal(dog, result);
+        }
+
+        [Fact]
+        public async Task CreateDog_WhenExistingDog_ThrowsInvalidOperationException()
+        {
+            var dog = new Dog
+            {
+                Name = "John",
+                Color = "White",
+                Tail_Length = 1,
+                Weight = 1,
+            };
+
+            _context.Dogs.Add(dog);
+            await _context.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.CreateDogAsync(dog));
+        }
     }
 }
