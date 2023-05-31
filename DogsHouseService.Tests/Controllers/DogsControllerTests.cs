@@ -99,7 +99,7 @@ namespace DogsHouseService.Tests.Controllers
                 new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
             };
 
-            var pagedDogs = dogs.AsQueryable().Skip(pageNumber - 1).Take(pageSize);
+            var pagedDogs = dogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize);
             A.CallTo(() => _dogService.GetPagedDogsAsync(pageNumber, pageSize))
                 .Returns(pagedDogs);
 
