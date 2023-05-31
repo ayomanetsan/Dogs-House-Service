@@ -138,7 +138,7 @@ namespace DogsHouseService.Tests.Controllers
             };
 
             var sortedDogs = DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList();
-            var pagedAndSortedDogs = sortedDogs.AsQueryable().Skip(pageNumber - 1).Take(pageSize);
+            var pagedAndSortedDogs = sortedDogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize);
             A.CallTo(() => _dogService.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order))
                 .Returns(pagedAndSortedDogs);
 
