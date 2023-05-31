@@ -1,12 +1,9 @@
 ﻿using DogsHouseService.BLL.Helpers;
 using DogsHouseService.BLL.Interfaces;
-using DogsHouseService.BLL.Services;
 using DogsHouseService.DAL.Entities;
 using DogsHouseService.WebAPI.Controllers;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using Xunit;
 
 namespace DogsHouseService.Tests.Controllers
@@ -32,7 +29,7 @@ namespace DogsHouseService.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetDogs_WhenNoParameteres_ReturnsOkWithAllDogs()
+        public async Task GetDogs_WhenNoParameters_ReturnsOkWithAllDogs()
         {
             var dogs = new List<Dog>()
             {
@@ -122,6 +119,46 @@ namespace DogsHouseService.Tests.Controllers
                 .Throws<ArgumentException>();
 
             var result = await _sut.GetDogs(pageNumber, pageSize);
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, 2, "name", "desc")]
+        [InlineData(2, 1, "color", "asc")]
+        [InlineData(3, 10, "weight", "asc")]
+        public async Task GetDogs_WhenValidParameters_ReturnsOkPagedAndSortedDogs(int pageNumber, int pageSize, string attribute, string order)
+        {
+            var dogs = new List<Dog>()
+            {
+                new Dog { Name = "John", Color = "White", Tail_Length = 1, Weight = 10 },
+                new Dog { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 5 },
+                new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
+            };
+
+            var sortedDogs = DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList();
+            var pagedAndSortedDogs = sortedDogs.AsQueryable().Skip(pageNumber - 1).Take(pageSize);
+            A.CallTo(() => _dogService.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order))
+                .Returns(pagedAndSortedDogs);
+
+            var result = await _sut.GetDogs(pageNumber, pageSize, attribute, order);
+
+            var okObjectResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okObjectResult.StatusCode);
+            Assert.Equal(pagedAndSortedDogs, okObjectResult.Value);
+        }
+
+        [Theory]
+        [InlineData(-1, 10, "name", "desc")]
+        [InlineData(5, 1, "breed", "asc")]
+        [InlineData(3, -1, " ", "crusty")]
+        public async Task GetDogs_WhenInvalidParameters_ReturnsBadRequest(int pageNumber, int pageSize, string attribute, string order)
+        {
+            A.CallTo(() => _dogService.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order))
+                .Throws<ArgumentException>();
+
+            var result = await _sut.GetDogs(pageNumber, pageSize, attribute, order);
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
