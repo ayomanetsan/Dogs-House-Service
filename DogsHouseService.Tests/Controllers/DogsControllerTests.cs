@@ -163,5 +163,61 @@ namespace DogsHouseService.Tests.Controllers
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
         }
+
+        [Fact]
+        public async Task CreateDog_WhenValidNonExistingDog_ReturnsCreated()
+        {
+            var dog = new Dog
+            {
+                Name = "John",
+                Color = "White",
+                Tail_Length = 1,
+                Weight = 1
+            };
+
+            var result = await _sut.CreateDog(dog);
+
+            var createdResult = Assert.IsType<CreatedResult>(result);
+            Assert.Equal(201, createdResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateDog_WhenValidExistingDog_ReturnsBadRequest()
+        {
+            var dog = new Dog
+            {
+                Name = "John",
+                Color = "White",
+                Tail_Length = 1,
+                Weight = 1
+            };
+
+            await _sut.CreateDog(dog);
+            A.CallTo(() => _dogService.CreateDogAsync(dog))
+                .Throws<ArgumentException>();
+
+            var result = await _sut.CreateDog(dog);
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateDog_WhenInvalidModel_ReturnsBadRequest()
+        {
+            var dog = new Dog
+            {
+                Name = "John",
+                Color = "White",
+                Tail_Length = 1,
+                Weight = 1
+            };
+            _sut.ModelState.AddModelError("Invalid", "Fake model state");
+
+            var result = await _sut.CreateDog(dog);
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
+        }
     }
 }
