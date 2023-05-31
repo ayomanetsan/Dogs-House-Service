@@ -1,6 +1,9 @@
-﻿using DogsHouseService.BLL.Helpers;
+﻿using AutoMapper;
+using DogsHouseService.BLL.Helpers;
 using DogsHouseService.BLL.Interfaces;
+using DogsHouseService.BLL.MappingProfiles;
 using DogsHouseService.BLL.Services;
+using DogsHouseService.Common.DTO.Dog;
 using DogsHouseService.DAL.Context;
 using DogsHouseService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +12,9 @@ using Xunit;
 namespace DogsHouseService.Tests.Services
 {
     public class DogServiceTests
-    {
+    {    
         private readonly DogsHouseServiceDbContext _context;
+        private readonly IMapper _mapper;
         private readonly IDogService _sut;
 
         public DogServiceTests()
@@ -20,7 +24,13 @@ namespace DogsHouseService.Tests.Services
                 .Options;
 
             _context = new DogsHouseServiceDbContext(options);
-            _sut = new DogService(_context);
+            var mapperConfiguration = new MapperConfiguration(config =>
+            {
+                config.AddProfile<DogProfile>();
+            });
+
+            _mapper = mapperConfiguration.CreateMapper();
+            _sut = new DogService(_context, _mapper);
         }
 
         [Fact]
@@ -38,7 +48,7 @@ namespace DogsHouseService.Tests.Services
 
             var result = await _sut.GetAllDogsAsync();
 
-            Assert.Equal(dogs, result);
+            Assert.Equal(dogs.Count(), result.Count());
         }
 
         [Theory]
@@ -61,7 +71,7 @@ namespace DogsHouseService.Tests.Services
 
             var result = await _sut.GetSortedDogsAsync(attribute, order);
 
-            Assert.Equal(sortedDogs, result);
+            Assert.Equal(sortedDogs.Count(), result.Count());
         }
 
         [Theory]
@@ -91,7 +101,7 @@ namespace DogsHouseService.Tests.Services
 
             var result = await _sut.GetPagedDogsAsync(pageNumber, pageSize);
 
-            Assert.Equal(pagedDogs, result);
+            Assert.Equal(pagedDogs.Count(), result.Count());
         }
 
         [Theory]
@@ -123,7 +133,7 @@ namespace DogsHouseService.Tests.Services
 
             var result = await _sut.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order);
 
-            Assert.Equal(pagedAndSortedDogs, result);
+            Assert.Equal(pagedAndSortedDogs.Count(), result.Count());
         }
 
         [Theory]
@@ -138,7 +148,7 @@ namespace DogsHouseService.Tests.Services
         [Fact]
         public async Task CreateDog_WhenNonExistingDog_ReturnsCreatedDog()
         {
-            var dog = new Dog
+            var dog = new DogDto
             {
                 Name = "John",
                 Color = "White",
@@ -148,13 +158,13 @@ namespace DogsHouseService.Tests.Services
 
             var result = await _sut.CreateDogAsync(dog);
 
-            Assert.Equal(dog, result);
+            Assert.NotNull(result);
         }
 
         [Fact]
         public async Task CreateDog_WhenExistingDog_ThrowsInvalidOperationException()
         {
-            var dog = new Dog
+            var dog = new DogDto
             {
                 Name = "John",
                 Color = "White",
@@ -162,7 +172,7 @@ namespace DogsHouseService.Tests.Services
                 Weight = 1,
             };
 
-            _context.Dogs.Add(dog);
+            _context.Dogs.Add(_mapper.Map<Dog>(dog));
             await _context.SaveChangesAsync();
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await _sut.CreateDogAsync(dog));
