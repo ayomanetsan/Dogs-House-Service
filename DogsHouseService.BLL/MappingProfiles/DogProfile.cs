@@ -4,11 +4,12 @@ using DogsHouseService.DAL.Entities;
 
 namespace DogsHouseService.BLL.MappingProfiles
 {
-    internal class DogProfile : Profile
+    public class DogProfile : Profile
     {
         public DogProfile()
         {
             CreateMap<Dog, DogDto>();
+            CreateMap<DogDto, Dog>();
         }
     }
 }

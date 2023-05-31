@@ -1,5 +1,5 @@
 ﻿using DogsHouseService.BLL.Interfaces;
-using DogsHouseService.DAL.Entities;
+using DogsHouseService.Common.DTO.Dog;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DogsHouseService.WebAPI.Controllers
@@ -41,7 +41,7 @@ namespace DogsHouseService.WebAPI.Controllers
         }
 
         [HttpPost("dog")]
-        public async Task<IActionResult> CreateDog([FromBody] Dog dog)
+        public async Task<IActionResult> CreateDog([FromBody] DogDto dog)
         {
             if (!ModelState.IsValid)
             {
