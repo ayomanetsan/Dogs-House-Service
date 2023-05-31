@@ -108,7 +108,7 @@ namespace DogsHouseService.Tests.Services
         [InlineData(-1, 10)]
         [InlineData(10, -1)]
         [InlineData(0, 0)]
-        public async Task GetPagedDogsAsync_WhenInvalidParameters_ReturnsPagedDogs(int pageNumber, int pageSize)
+        public async Task GetPagedDogsAsync_WhenInvalidParameters_ThrowsArgumentException(int pageNumber, int pageSize)
         {
             await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GetPagedDogsAsync(pageNumber, pageSize));
         }
