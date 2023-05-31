@@ -20,7 +20,7 @@ namespace DogsHouseService.WebAPI.Controllers
         }
 
         [HttpGet("dogs")]
-        public async Task<IActionResult> GetDogs([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string attribute, [FromQuery] string order)
+        public async Task<IActionResult> GetDogs([FromQuery] int pageNumber = 0, [FromQuery] int pageSize = 0, [FromQuery] string attribute = null, [FromQuery] string order = null)
         {
             if (pageNumber != 0 && pageSize != 0 && !string.IsNullOrEmpty(attribute) && !string.IsNullOrEmpty(order))
             {

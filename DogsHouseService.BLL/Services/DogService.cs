@@ -42,7 +42,7 @@ namespace DogsHouseService.BLL.Services
 
             int skipCount = (pageNumber - 1) * pageSize;
 
-            return await _context.Dogs.Skip(skipCount).Take(pageSize).ToListAsync();
+            return await query.Skip(skipCount).Take(pageSize).ToListAsync();
         }
 
         public async Task<Dog> CreateDogAsync(Dog dog)
