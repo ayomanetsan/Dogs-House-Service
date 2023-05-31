@@ -3,6 +3,7 @@ using DogsHouseService.BLL.Interfaces;
 using DogsHouseService.BLL.Services;
 using DogsHouseService.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using DogsHouseService.BLL.MappingProfiles;
 
 namespace DogsHouseService.WebAPI.Extensions
 {
@@ -20,6 +21,7 @@ namespace DogsHouseService.WebAPI.Extensions
         public static void RegisterCustomServices(this IServiceCollection services)
         {
             services.AddTransient<IDogService, DogService>();
+            services.AddAutoMapper(typeof(DogProfile).Assembly);
         }
 
         public static void AddIpRateLimiting(this IServiceCollection services, IConfiguration configuration)
