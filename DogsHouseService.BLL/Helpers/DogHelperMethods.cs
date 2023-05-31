@@ -50,13 +50,13 @@ namespace DogsHouseService.BLL.Helpers
             {
                 throw new ArgumentException("Dog's color cannot be empty.");
             }
-            else if (dog.Tail_Length < 0)
+            else if (dog.Tail_Length <= 0)
             {
-                throw new ArgumentException("Dog's tail length cannot be less than zero.");
+                throw new ArgumentException("Dog's tail length must be greater than zero.");
             }
-            else if (dog.Weight < 0)
+            else if (dog.Weight <= 0)
             {
-                throw new ArgumentException("Dog's weight cannot be less than zero.");
+                throw new ArgumentException("Dog's weight must be greater than zero.");
             }           
         }
     }
