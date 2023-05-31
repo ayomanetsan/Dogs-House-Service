@@ -71,5 +71,36 @@ namespace DogsHouseService.Tests.Services
         {
             await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GetSortedDogsAsync(attribute, order));
         }
+
+        [Theory]
+        [InlineData(1, 2)]
+        [InlineData(2, 1)]
+        [InlineData(3, 10)]
+        public async Task GetPagedDogsAsync_WhenValidParameters_ReturnsPagedDogs(int pageNumber, int pageSize)
+        {
+            var dogs = new List<Dog>()
+            {
+                new Dog { Name = "John", Color = "White", Tail_Length = 1, Weight = 10 },
+                new Dog { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 5 },
+                new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
+            };
+            var pagedDogs = dogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            _context.Dogs.AddRange(dogs);
+            await _context.SaveChangesAsync();
+
+            var result = await _sut.GetPagedDogsAsync(pageNumber, pageSize);
+
+            Assert.Equal(pagedDogs, result);
+        }
+
+        [Theory]
+        [InlineData(-1, 10)]
+        [InlineData(10, -1)]
+        [InlineData(0, 0)]
+        public async Task GetPagedDogsAsync_WhenInvalidParameters_ReturnsPagedDogs(int pageNumber, int pageSize)
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GetPagedDogsAsync(pageNumber, pageSize));
+        }
     }
 }
