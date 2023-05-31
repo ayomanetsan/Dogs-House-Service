@@ -1,17 +1,17 @@
-﻿using DogsHouseService.DAL.Entities;
+﻿using DogsHouseService.Common.DTO.Dog;
 
 namespace DogsHouseService.BLL.Interfaces
 {
     public interface IDogService
     {
-        Task<IEnumerable<Dog>> GetAllDogsAsync();
+        Task<IEnumerable<DogDto>> GetAllDogsAsync();
 
-        Task<IEnumerable<Dog>> GetSortedDogsAsync(string attribute, string order);
+        Task<IEnumerable<DogDto>> GetSortedDogsAsync(string attribute, string order);
 
-        Task<IEnumerable<Dog>> GetPagedDogsAsync(int pageNumber, int pageSize);
+        Task<IEnumerable<DogDto>> GetPagedDogsAsync(int pageNumber, int pageSize);
 
-        Task<IEnumerable<Dog>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, string order);
+        Task<IEnumerable<DogDto>> GetPagedAndSortedDogsAsync(int pageNumber, int pageSize, string attribute, string order);
 
-        Task<Dog> CreateDogAsync(Dog dog);
+        Task<DogDto> CreateDogAsync(DogDto dog);
     }
 }
