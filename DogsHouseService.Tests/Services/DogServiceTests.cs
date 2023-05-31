@@ -1,8 +1,8 @@
-﻿using DogsHouseService.BLL.Interfaces;
+﻿using DogsHouseService.BLL.Helpers;
+using DogsHouseService.BLL.Interfaces;
 using DogsHouseService.BLL.Services;
 using DogsHouseService.DAL.Context;
 using DogsHouseService.DAL.Entities;
-using FakeItEasy;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -41,8 +41,12 @@ namespace DogsHouseService.Tests.Services
             Assert.Equal(dogs, result);
         }
 
-        [Fact]
-        public async Task Test()
+        [Theory]
+        [InlineData("name", "desc")]
+        [InlineData("color", "asc")]
+        [InlineData("weight", "asc")]
+        [InlineData("tail_length", "desc")]
+        public async Task GetSortedDogsAsync_WhenValidParameters_ReturnsSortedDogs(string attribute, string order)
         {
             var dogs = new List<Dog>()
             {
@@ -50,10 +54,22 @@ namespace DogsHouseService.Tests.Services
                 new Dog { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 5 },
                 new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
             };
+            var sortedDogs = DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList();
 
-            var result = await _sut.GetAllDogsAsync();
+            _context.Dogs.AddRange(dogs);
+            await _context.SaveChangesAsync();
 
-            Assert.Equal(dogs, result);
+            var result = await _sut.GetSortedDogsAsync(attribute, order);
+
+            Assert.Equal(sortedDogs, result);
+        }
+
+        [Theory]
+        [InlineData("name", " ")]
+        [InlineData("breed", "asc")]
+        public async Task GetSortedDogsAsync_WhenInvalidParameters_ThrowsArgumentException(string attribute, string order)
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () => await _sut.GetSortedDogsAsync(attribute, order));
         }
     }
 }
