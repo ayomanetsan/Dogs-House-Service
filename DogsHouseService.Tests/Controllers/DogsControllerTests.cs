@@ -1,9 +1,13 @@
-﻿using DogsHouseService.BLL.Helpers;
+﻿using AutoMapper;
+using DogsHouseService.BLL.Helpers;
 using DogsHouseService.BLL.Interfaces;
+using DogsHouseService.BLL.MappingProfiles;
+using DogsHouseService.Common.DTO.Dog;
 using DogsHouseService.DAL.Entities;
 using DogsHouseService.WebAPI.Controllers;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Xunit;
 
 namespace DogsHouseService.Tests.Controllers
@@ -11,11 +15,18 @@ namespace DogsHouseService.Tests.Controllers
     public class DogsControllerTests
     {
         private readonly IDogService _dogService;
+        private readonly IMapper _mapper;
         private readonly DogsController _sut;
 
         public DogsControllerTests()
         {
             _dogService = A.Fake<IDogService>();
+            var mapperConfiguration = new MapperConfiguration(config =>
+            {
+                config.AddProfile<DogProfile>();
+            });
+
+            _mapper = mapperConfiguration.CreateMapper();
             _sut = new DogsController(_dogService);
         }
 
@@ -31,10 +42,10 @@ namespace DogsHouseService.Tests.Controllers
         [Fact]
         public async Task GetDogs_WhenNoParameters_ReturnsOkWithAllDogs()
         {
-            var dogs = new List<Dog>()
+            var dogs = new List<DogDto>()
             {
-                new Dog { Name = "John", Color = "White", Tail_Length = 1, Weight = 1 },
-                new Dog { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 2 }
+                new DogDto { Name = "John", Color = "White", Tail_Length = 1, Weight = 1 },
+                new DogDto { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 2 }
             };
 
             A.CallTo(() => _dogService.GetAllDogsAsync())
@@ -61,7 +72,7 @@ namespace DogsHouseService.Tests.Controllers
                 new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
             };
 
-            var sortedDogs = DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList();
+            var sortedDogs = _mapper.Map<IEnumerable<DogDto>>(DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList());
             A.CallTo(() => _dogService.GetSortedDogsAsync(attribute, order))
                 .Returns(sortedDogs);
 
@@ -80,7 +91,17 @@ namespace DogsHouseService.Tests.Controllers
             A.CallTo(() => _dogService.GetSortedDogsAsync(attribute, order))
                 .Throws<ArgumentException>();
 
-            var result = await _sut.GetDogs(attribute: attribute, order: order);
+            IActionResult result;
+            try
+            {
+                result = await _sut.GetDogs(attribute: attribute, order: order);
+            }
+            catch (Exception ex)
+            {
+                var request = new BadRequestObjectResult(ex.Message);
+                request.StatusCode = (int)HttpStatusCode.BadRequest;
+                result = request;
+            }
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
@@ -99,7 +120,7 @@ namespace DogsHouseService.Tests.Controllers
                 new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
             };
 
-            var pagedDogs = dogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var pagedDogs =  _mapper.Map<IEnumerable<DogDto>>(dogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize));
             A.CallTo(() => _dogService.GetPagedDogsAsync(pageNumber, pageSize))
                 .Returns(pagedDogs);
 
@@ -118,7 +139,17 @@ namespace DogsHouseService.Tests.Controllers
             A.CallTo(() => _dogService.GetPagedDogsAsync(pageNumber, pageSize))
                 .Throws<ArgumentException>();
 
-            var result = await _sut.GetDogs(pageNumber, pageSize);
+            IActionResult result;
+            try
+            {
+                result = await _sut.GetDogs(pageNumber, pageSize);
+            }
+            catch (Exception ex)
+            {
+                var request = new BadRequestObjectResult(ex.Message);
+                request.StatusCode = (int)HttpStatusCode.BadRequest;
+                result = request;
+            }
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
@@ -138,7 +169,7 @@ namespace DogsHouseService.Tests.Controllers
             };
 
             var sortedDogs = DogHelperMethods.ApplySortByAttribute(dogs.AsQueryable(), attribute, order).ToList();
-            var pagedAndSortedDogs = sortedDogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var pagedAndSortedDogs = _mapper.Map<IEnumerable<DogDto>>(sortedDogs.AsQueryable().Skip((pageNumber - 1) * pageSize).Take(pageSize));
             A.CallTo(() => _dogService.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order))
                 .Returns(pagedAndSortedDogs);
 
@@ -158,7 +189,17 @@ namespace DogsHouseService.Tests.Controllers
             A.CallTo(() => _dogService.GetPagedAndSortedDogsAsync(pageNumber, pageSize, attribute, order))
                 .Throws<ArgumentException>();
 
-            var result = await _sut.GetDogs(pageNumber, pageSize, attribute, order);
+            IActionResult result;
+            try
+            {
+                result = await _sut.GetDogs(pageNumber, pageSize, attribute, order);
+            }
+            catch (Exception ex)
+            {
+                var request = new BadRequestObjectResult(ex.Message);
+                request.StatusCode = (int)HttpStatusCode.BadRequest;
+                result = request;
+            }
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
@@ -167,7 +208,7 @@ namespace DogsHouseService.Tests.Controllers
         [Fact]
         public async Task CreateDog_WhenValidNonExistingDog_ReturnsCreated()
         {
-            var dog = new Dog
+            var dog = new DogDto
             {
                 Name = "John",
                 Color = "White",
@@ -184,7 +225,7 @@ namespace DogsHouseService.Tests.Controllers
         [Fact]
         public async Task CreateDog_WhenValidExistingDog_ReturnsBadRequest()
         {
-            var dog = new Dog
+            var dog = new DogDto
             {
                 Name = "John",
                 Color = "White",
@@ -196,7 +237,17 @@ namespace DogsHouseService.Tests.Controllers
             A.CallTo(() => _dogService.CreateDogAsync(dog))
                 .Throws<InvalidOperationException>();
 
-            var result = await _sut.CreateDog(dog);
+            IActionResult result;
+            try
+            {
+                result = await _sut.CreateDog(dog);
+            }
+            catch (Exception ex)
+            {
+                var request = new BadRequestObjectResult(ex.Message);
+                request.StatusCode = (int)HttpStatusCode.BadRequest;
+                result = request;
+            }
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
@@ -205,7 +256,7 @@ namespace DogsHouseService.Tests.Controllers
         [Fact]
         public async Task CreateDog_WhenInvalidModel_ReturnsBadRequest()
         {
-            var dog = new Dog
+            var dog = new DogDto
             {
                 Name = "John",
                 Color = "White",
