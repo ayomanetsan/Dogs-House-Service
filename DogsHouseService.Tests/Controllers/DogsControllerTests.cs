@@ -5,6 +5,8 @@ using DogsHouseService.DAL.Entities;
 using DogsHouseService.WebAPI.Controllers;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using Xunit;
 
 namespace DogsHouseService.Tests.Controllers
@@ -82,6 +84,44 @@ namespace DogsHouseService.Tests.Controllers
                 .Throws<ArgumentException>();
 
             var result = await _sut.GetDogs(attribute: attribute, order: order);
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1, 2)]
+        [InlineData(2, 1)]
+        [InlineData(3, 10)]
+        public async Task GetDogs_WhenValidPageNumberAndPageSize_ReturnsOkPagedDogs(int pageNumber, int pageSize)
+        {
+            var dogs = new List<Dog>()
+            {
+                new Dog { Name = "John", Color = "White", Tail_Length = 1, Weight = 10 },
+                new Dog { Name = "Jane", Color = "Black", Tail_Length = 2, Weight = 5 },
+                new Dog { Name = "Max", Color = "Brown", Tail_Length = 3, Weight = 8 },
+            };
+
+            var pagedDogs = dogs.AsQueryable().Skip(pageNumber - 1).Take(pageSize);
+            A.CallTo(() => _dogService.GetPagedDogsAsync(pageNumber, pageSize))
+                .Returns(pagedDogs);
+
+            var result = await _sut.GetDogs(pageNumber, pageSize);
+
+            var okObjectResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okObjectResult.StatusCode);
+            Assert.Equal(pagedDogs, okObjectResult.Value);
+        }
+
+        [Theory]
+        [InlineData(-1, 10)]
+        [InlineData(1, -10)]
+        public async Task GetDogs_WhenInvalidPageNumberAndPageSize_ReturnsBadRequest(int pageNumber, int pageSize)
+        {
+            A.CallTo(() => _dogService.GetPagedDogsAsync(pageNumber, pageSize))
+                .Throws<ArgumentException>();
+
+            var result = await _sut.GetDogs(pageNumber, pageSize);
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestObjectResult.StatusCode);
